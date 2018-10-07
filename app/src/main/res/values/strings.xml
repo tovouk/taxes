@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">AlgoliaDemo</string>
+    <string name="search">Search</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="name">Name</string>
+    <string name="email">Email@email.com</string>
+    <string name="phone">123-456-7890</string>
+    <string name="address">something street City, State</string>
+    <string name="ssn">SSN: </string>
+    <string name="social_security">SSN: 123&#8211;45&#8211;6789</string>
+    <string name="owed">Owed: </string>
+    <string name="moneyOwed">Owed: $XXXX.XX</string>
+</resources>

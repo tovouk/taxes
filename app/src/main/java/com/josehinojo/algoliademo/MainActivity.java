@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
 
 
         });
+
     }
 
     @Override
@@ -246,7 +247,6 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                 }else{
                     methodCalled = "onQueryTextSubmit";
                     globalStringQuery = newText;
-                    Toast.makeText(getApplicationContext(),"Search page " + searchPageNumber,Toast.LENGTH_SHORT).show();
                 }
                 getAllJSON();
                 accountListAdapter.notifyDataSetChanged();
@@ -304,7 +304,6 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                 });
             }else {
                 query = new Query("*").setHitsPerPage(10).setPage(pageNumber);
-                Toast.makeText(getApplicationContext(),"page number" + pageNumber,Toast.LENGTH_SHORT).show();
                 index.searchAsync(query, new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -347,11 +346,11 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                 account.setName();
                 account.setAddress();
                 accountList.add(account);
+//                accountListAdapter.notifyItemChanged(i);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        accountListAdapter.notifyDataSetChanged();
         if(accountList.size() == 0){
             errorString = getResources().getString(R.string.emptySearch);
             imageID = R.drawable.sad;

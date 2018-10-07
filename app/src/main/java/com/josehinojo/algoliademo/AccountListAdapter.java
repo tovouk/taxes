@@ -53,6 +53,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
             itemClickListener.onListItemClick(accountList.get(position));
         }
 
+
     }
 
 
@@ -76,6 +77,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
         holder.address.setText(account.getAddress());
         holder.socialSecurity.setText(String.valueOf(account.getSocialSecurity()));
         holder.moneyOwed.setText("$" + String.valueOf(account.getMoneyOwed()));
+
     }
 
 

@@ -11,6 +11,7 @@ import android.support.transition.Fade;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -44,17 +45,28 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 public class MainActivity extends AppCompatActivity implements AccountListAdapter.ListItemClickListener{
+
+    public static final String ACCOUNTLIST = "accountList";
+
+    /*
+    API keys are retrieved from BuildConfig,
+    Admin key is unused as no administration privileges are required at this time.
+    Perhaps it will come into play in the future, that is why I included it.
+     */
     String ApplicationID = BuildConfig.AppID;
     String AdminApiKey = BuildConfig.ApiKey;
     String SearchApiKey = BuildConfig.ApiKey1;
 
-    Client client = new Client(ApplicationID,AdminApiKey);
+    Client client = new Client(ApplicationID,SearchApiKey);
     Index index = client.getIndex("dev_tax");
 
     AccountListAdapter accountListAdapter;
-    ArrayList<Account> accountList = new ArrayList<>();
+    ArrayList<Account> accountList;
     Query query;
+    String globalStringQuery;
     int pageNumber;
     int searchPageNumber;
     String methodCalled;
@@ -75,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
 
     SearchView searchView;
 
-    //    Todo Add tablet layout
-    //    todo saveinstancestate to save list on orientation change instead of calling api again
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,16 +94,42 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
         ButterKnife.bind(this);
 
         recyclerView.setHasFixedSize(true);
+        if(savedInstanceState != null){
+            if(Objects.requireNonNull(savedInstanceState.getParcelableArrayList(ACCOUNTLIST)).size() > 0){
+                accountList = savedInstanceState.getParcelableArrayList(ACCOUNTLIST);
+            }
+        }else{
+            accountList= new ArrayList<>();
+        }
+
         accountListAdapter = new AccountListAdapter(accountList,getApplicationContext(),this);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
+        final GridLayoutManager layoutManager;
+        int columnCount = 1;
+        //check if device is a tablet
+        if(getResources().getBoolean(R.bool.isTablet)){
+            columnCount = 3;
+            layoutManager = new GridLayoutManager(this,columnCount);
+        }else{
+            if(getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
+                columnCount = 2;
+            }else{
+                columnCount = 1;
+            }
+             layoutManager = new GridLayoutManager(this,columnCount);
+        }
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(accountListAdapter);
         errorString = getResources().getString(R.string.networkError);
         imageID = R.drawable.nowifi;
 
         methodCalled = "getAll";
-        pageNumber = 1;
-        searchPageNumber = 1;
+        pageNumber = 0;
+        searchPageNumber = 0;
+
+        getAllJSON();
+
         //from https://stackoverflow.com/questions/26543131/how-to-implement-endless-list-with-recyclerview
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -112,17 +148,45 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                     }
                     if (!loading && (totalItemCount - visibleItemCount)
                             <= (firstVisibleItem + visibleThreshold)) {
-                        loading = true;
-                        pageNumber++;
                         searchPageNumber++;
+                        pageNumber++;
+                        if(methodCalled.equals("onQueryTextSubmit")){
+                            query.setPage(pageNumber);
+                        }else{
+                            query.setPage(pageNumber);
+                        }
                         getAllJSON();
+                        loading = true;
                     }
 
                 }
 
             }
+
+
         });
-        getAllJSON();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(ACCOUNTLIST,accountList);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        accountList = savedInstanceState.getParcelableArrayList(ACCOUNTLIST);
     }
 
     @Override
@@ -157,20 +221,34 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String stringQuery) {
+                searchPageNumber = 0;
+                pageNumber = 0;
+                accountList.clear();
+                accountListAdapter.notifyDataSetChanged();
                 methodCalled = "onQueryTextSubmit";
-                query = new Query(stringQuery)
-                        .setHitsPerPage(10).setPage(searchPageNumber);
+                globalStringQuery = stringQuery;
                 getAllJSON();
+                accountListAdapter.notifyDataSetChanged();
                 return true;
             };
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
+                searchPageNumber = 0;
+                pageNumber = 0;
                 accountList.clear();
+                accountListAdapter.notifyDataSetChanged();
                 if(newText.length() == 0){
                     methodCalled = "getAll";
                     getAllJSON();
+
+                }else{
+                    methodCalled = "onQueryTextSubmit";
+                    globalStringQuery = newText;
+                    Toast.makeText(getApplicationContext(),"Search page " + searchPageNumber,Toast.LENGTH_SHORT).show();
                 }
+                getAllJSON();
                 accountListAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -215,7 +293,8 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
         if(netInfo != null && netInfo.isConnected()) {
             showResults();
             if(methodCalled.equals("onQueryTextSubmit")){
-
+                query = new Query(globalStringQuery)
+                        .setHitsPerPage(10).setPage(pageNumber);
                 index.searchAsync(query, new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -225,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                 });
             }else {
                 query = new Query("*").setHitsPerPage(10).setPage(pageNumber);
+                Toast.makeText(getApplicationContext(),"page number" + pageNumber,Toast.LENGTH_SHORT).show();
                 index.searchAsync(query, new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -271,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                 e.printStackTrace();
             }
         }
+        accountListAdapter.notifyDataSetChanged();
         if(accountList.size() == 0){
             errorString = getResources().getString(R.string.emptySearch);
             imageID = R.drawable.sad;

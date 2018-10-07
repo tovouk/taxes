@@ -26,7 +26,7 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/textmargin"
                 android:hint="@string/name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:id="@+id/email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/textmargin"
                 android:hint="@string/email"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -46,7 +46,7 @@
                 android:id="@+id/phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/textmargin"
                 android:hint="@string/phone"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
         </LinearLayout>
@@ -55,15 +55,15 @@
                 android:id="@+id/address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="@dimen/textmargin"
+                android:layout_marginEnd="@dimen/textmargin"
                 android:hint="@string/address"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
             <TextView
                 android:id="@+id/social_security"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/textmargin"
                 android:hint="@string/social_security"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
             <LinearLayout
@@ -72,16 +72,16 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="@dimen/zero"
+                    android:layout_height="@dimen/zero"
                     android:layout_weight=".5"
                     />
 
                 <TextView
                     android:id="@+id/owed"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/zero"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="@dimen/textmargin"
                     android:layout_weight=".5"
                     android:hint="@string/moneyOwed"
                     android:gravity="end"

@@ -75,7 +75,7 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
         holder.phone.setText(account.getPhone());
         holder.address.setText(account.getAddress());
         holder.socialSecurity.setText(String.valueOf(account.getSocialSecurity()));
-        holder.moneyOwed.setText(String.valueOf(account.getMoneyOwed()));
+        holder.moneyOwed.setText("$" + String.valueOf(account.getMoneyOwed()));
     }
 
 

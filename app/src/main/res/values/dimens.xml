@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="zero">0dp</dimen>
+
     <dimen name="cardElevation">1dp</dimen>
     <dimen name="appbarElevation">4dp</dimen>
     <dimen name="toolbarContent">76dp</dimen>
 
 
     <dimen name="cardMargin">4dp</dimen>
+    <dimen name="textmargin">8dp</dimen>
+    <dimen name="errorMargin">32dp</dimen>
 </resources>

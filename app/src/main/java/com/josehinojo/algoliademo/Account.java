@@ -2,6 +2,7 @@ package com.josehinojo.algoliademo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 public class Account implements Parcelable {
     private String firstName;
@@ -167,6 +168,7 @@ public class Account implements Parcelable {
         dest.writeDouble(moneyOwed);
     }
 
+    @NonNull
     @Override
     public String toString() {
 

@@ -24,5 +24,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <ImageView
+        android:id="@+id/networkError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/nowifi"
+        android:tint="@color/black"
+        android:layout_gravity="center"
+        android:contentDescription="@string/networkError"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/networkError"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/errorMargin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+
 
 </android.support.design.widget.CoordinatorLayout>

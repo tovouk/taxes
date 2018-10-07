@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
     ArrayList<Account> accountList;
     Query query;
     String globalStringQuery;
-    int pageNumber;
-    int searchPageNumber;
     String methodCalled;
 
     //from https://stackoverflow.com/questions/26543131/how-to-implement-endless-list-with-recyclerview
@@ -125,46 +123,8 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
         imageID = R.drawable.nowifi;
 
         methodCalled = "getAll";
-        pageNumber = 0;
-        searchPageNumber = 0;
 
         getAllJSON();
-
-        //from https://stackoverflow.com/questions/26543131/how-to-implement-endless-list-with-recyclerview
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if(dy > 0)
-                {
-                    visibleItemCount = layoutManager.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-
-                    if (loading) {
-                        if (totalItemCount > previousTotal) {
-                            loading = false;
-                            previousTotal = totalItemCount;
-                        }
-                    }
-                    if (!loading && (totalItemCount - visibleItemCount)
-                            <= (firstVisibleItem + visibleThreshold)) {
-                        searchPageNumber++;
-                        pageNumber++;
-                        if(methodCalled.equals("onQueryTextSubmit")){
-                            query.setPage(pageNumber);
-                        }else{
-                            query.setPage(pageNumber);
-                        }
-                        getAllJSON();
-                        loading = true;
-                    }
-
-                }
-
-            }
-
-
-        });
 
     }
 
@@ -222,8 +182,6 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String stringQuery) {
-                searchPageNumber = 0;
-                pageNumber = 0;
                 accountList.clear();
                 accountListAdapter.notifyDataSetChanged();
                 methodCalled = "onQueryTextSubmit";
@@ -236,8 +194,6 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                searchPageNumber = 0;
-                pageNumber = 0;
                 accountList.clear();
                 accountListAdapter.notifyDataSetChanged();
                 if(newText.length() == 0){
@@ -293,8 +249,7 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
         if(netInfo != null && netInfo.isConnected()) {
             showResults();
             if(methodCalled.equals("onQueryTextSubmit")){
-                query = new Query(globalStringQuery)
-                        .setHitsPerPage(10).setPage(pageNumber);
+                query = new Query(globalStringQuery).setHitsPerPage(1000).setPage(0);
                 index.searchAsync(query, new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -303,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                     }
                 });
             }else {
-                query = new Query("*").setHitsPerPage(10).setPage(pageNumber);
+                query = new Query("*").setHitsPerPage(1000).setPage(0);
                 index.searchAsync(query, new CompletionHandler() {
                     @Override
                     public void requestCompleted(JSONObject content, AlgoliaException error) {
@@ -346,11 +301,11 @@ public class MainActivity extends AppCompatActivity implements AccountListAdapte
                 account.setName();
                 account.setAddress();
                 accountList.add(account);
-//                accountListAdapter.notifyItemChanged(i);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        accountListAdapter.notifyDataSetChanged();
         if(accountList.size() == 0){
             errorString = getResources().getString(R.string.emptySearch);
             imageID = R.drawable.sad;

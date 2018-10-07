@@ -82,7 +82,6 @@ public class AccountListAdapter extends RecyclerView.Adapter<AccountListAdapter.
 
 
     @Override
-
     public int getItemCount() {
         return accountList.size();
     }

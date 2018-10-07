@@ -9,7 +9,6 @@ Known bugs:
 
 * Losing connection while loading more records can cause a crash.
 
-
 Note: This is merely a test version to display some of the core functionalities.
 
 Another note: A live version should have authentication as contact information like this should not be readily available except to any debt collectors. No calling feature was included as calling random numbers is not in our best interest.
@@ -22,5 +21,6 @@ As this is a test app, in order to use this app, you will have to define the fol
 * ApplicationID
 * AdminAPIKey
 * SearchAPIKey
+
 
 
